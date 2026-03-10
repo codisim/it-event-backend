@@ -7,141 +7,218 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(ulid())
-  email        String    @unique
-  password     String
-  firstName    String
-  lastName     String?
-  role         Role      @default(USER)
+  id        String   @id @default(ulid())
+  email     String   @unique
+  password  String
+  firstName String
+  lastName  String?
+  role      UserRole @default(USER)
+  status    Status   @default(ACTIVE)
+
   refreshToken String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  carts        Cart[]
-  orders       Order[]
-  payments     Payment[]
+
+  orders        Order[]
+  tickets       Ticket[]
+  reviews       Review[]
+  notifications Notification[]
+  payments      Payment[]
+  organizer     Organizer?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
   @@map("users")
 }
 
-model Product {
-  id          String      @id @default(ulid())
-  name        String
-  description String?
-  price       Decimal     @db.Decimal(10, 2)
-  stock       Int         @default(0)
-  sku         String      @unique
-  imageUrl    String?
-  isActice    Boolean     @default(true)
-  categoryId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  category    Category    @relation(fields: [categoryId], references: [id])
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  location    String
+  createdAt   DateTime @default(now())
 
-  @@index([sku, categoryId, isActice])
-  @@map("products")
+  organizerId String
+  organizer   Organizer @relation(fields: [organizerId], references: [id])
+
+  sessions      Session[]
+  tickets       Ticket[]
+  venue         Venue?         @relation(fields: [venueId], references: [id])
+  venueId       String?
+  ticketTypes   TicketType[]
+  orders        Order[]
+  sponsors      Sponsor[]
+  reviews       Review[]
+  notifications Notification[]
 }
 
-model Category {
-  id          String    @id @default(ulid())
+model Organizer {
+  id          String   @id @default(uuid())
   name        String
-  description String?
-  slug        String    @unique
-  imageUrl    String?
-  isActice    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  product     Product[]
+  companyName String
+  contactInfo String
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
-  @@index([slug, isActice])
-  @@map("categories")
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  events Event[]
 }
 
-model OrderItem {
-  id        String   @id @default(ulid())
-  quantity  Int
-  price     Decimal  @db.Decimal(10, 2)
-  productId String
-  orderId   String
+model Venue {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  mapLink   String?
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [productId], references: [id])
 
-  @@index([orderId, productId])
-  @@map("order_items")
+  events Event[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  title     String
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  speakers SessionSpeaker[]
+  reviews  Review[]
+}
+
+model Speaker {
+  id        String   @id @default(uuid())
+  name      String
+  bio       String
+  photo     String?
+  createdAt DateTime @default(now())
+
+  sessions SessionSpeaker[]
+}
+
+model SessionSpeaker {
+  id        String   @id @default(uuid())
+  sessionId String
+  speakerId String
+  createdAt DateTime @default(now())
+
+  session Session @relation(fields: [sessionId], references: [id])
+  speaker Speaker @relation(fields: [speakerId], references: [id])
+}
+
+model TicketType {
+  id        String   @id @default(uuid())
+  name      String
+  price     String
+  quantity  Int
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  tickets Ticket[]
+}
+
+model Ticket {
+  id        String   @id @default(uuid())
+  qrCode    String?
+  status    Status
+  createdAt DateTime @default(now())
+
+  userId       String
+  eventId      String
+  ticketTypeId String
+  orderId      String?
+
+  user       User       @relation(fields: [userId], references: [id])
+  event      Event      @relation(fields: [eventId], references: [id])
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id])
+  order      Order?     @relation(fields: [orderId], references: [id])
 }
 
 model Order {
-  id              String      @id @default(ulid())
-  orderNumber     String      @unique @default(cuid())
-  status          OrderStatus @default(PENDING)
-  totalAmount     Decimal     @db.Decimal(10, 2)
-  shippingAddress String?
-  userId          String
-  cartId          String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  orderItems      OrderItem[]
-  cart            Cart?       @relation(fields: [cartId], references: [id])
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  payment         Payment?
+  id          String      @id @default(uuid())
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
 
-  @@index([userId, orderNumber, status])
-  @@map("orders")
-}
+  userId  String
+  eventId String
 
-model Cart {
-  id         String     @id @default(ulid())
-  checkedOut Boolean    @default(false)
-  userId     String
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  cartItems  CartItem[]
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orders     Order[]
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id])
 
-  @@index([userId])
-  @@map("carts")
-}
-
-model CartItem {
-  id        String   @id @default(ulid())
-  quantity  Int      @default(1)
-  productId String
-  cartId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cart      Cart?    @relation(fields: [cartId], references: [id])
-  product   Product  @relation(fields: [productId], references: [id])
-
-  @@index([cartId, productId])
-  @@map("cart_items")
+  payment Payment?
+  tickets Ticket[]
 }
 
 model Payment {
-  id            String        @id @default(ulid())
-  amount        Decimal       @db.Decimal(10, 2)
-  status        PaymentStatus @default(PENDING)
-  currency      String        @default("USD")
-  paymentMethod String?
+  id            String        @id @default(uuid())
+  provider      String
   transactionId String?
-  orderId       String        @unique
-  userId        String
+  status        PaymentStatus @default(PENDING)
   createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([orderId, userId, transactionId])
-  @@map("payments")
+  userId  String
+  orderId String @unique
+
+  user  User  @relation(fields: [userId], references: [id])
+  order Order @relation(fields: [orderId], references: [id])
 }
 
-enum Role {
-  ADMIN
+model Sponsor {
+  id        String   @id @default(uuid())
+  name      String
+  tier      String
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  eventId   String?
+  sessionId String?
+
+  user    User     @relation(fields: [userId], references: [id])
+  event   Event?   @relation(fields: [eventId], references: [id])
+  session Session? @relation(fields: [sessionId], references: [id])
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  message    String
+  readStatus Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  userId  String
+  eventId String?
+
+  user  User   @relation(fields: [userId], references: [id])
+  event Event? @relation(fields: [eventId], references: [id])
+}
+
+enum UserRole {
   USER
+  ADMIN
+  ORGANIZER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  COMPLETED
 }
 
 enum OrderStatus {
