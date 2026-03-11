@@ -25,10 +25,10 @@ export class EventsController {
         description: 'Bad request',
     })
 
-    // @ApiResponse({
-    //     status: 500,
-    //     description: 'Internal server error',
-    // })
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error',
+    })
 
     async createEvent(@Body() createEventDto: CreateEventDto): Promise<EventResponseDto> {
         return this.eventsService.createEvent(createEventDto);
