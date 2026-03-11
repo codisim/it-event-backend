@@ -26,11 +26,5 @@ export class CreateOrganizerDto {
   @IsString()
   @IsNotEmpty({ message: "Contact info cannot be empty." })
   contactInfo: string;
-
-  @ApiProperty({
-    description: "User ID associated with the organizer",
-    example: "123e4567-e89b-12d3-a456-426614174000"
-  })
-  @IsUUID("4", { message: "User ID must be a valid UUID." })
-  userId: string;
+  
 }

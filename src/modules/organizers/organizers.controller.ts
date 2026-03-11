@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Request } from '@nestjs/common';
 import { OrganizersService } from './organizers.service';
 import { Roles } from 'src/common/decorators/role.decorators';
 import { UserRole } from '@prisma/client';
@@ -35,7 +35,10 @@ export class OrganizersController {
         description: 'Internal server error',
     })
 
-    async createOrganizer(@Body() createOrganizerDto: CreateOrganizerDto): Promise<OrganizerResponseDto> {
-        return this.organizersService.createOrganizer(createOrganizerDto);
+    async createOrganizer(@Body() createOrganizerDto: CreateOrganizerDto, @Request() req: { user: { id: string } }): Promise<OrganizerResponseDto> {
+        
+        const userId = req.user.id;
+        
+        return this.organizersService.createOrganizer(createOrganizerDto, userId);
     }
 }
