@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { OrganizerStatus } from "@prisma/client";
+import { IsEnum } from "class-validator";
 
 export class UpdateOrganizerStatusDto {
 
@@ -8,6 +9,7 @@ export class UpdateOrganizerStatusDto {
         example: OrganizerStatus.APPROVED,
         description: 'Organizer approval status'
     })
+    @IsEnum(OrganizerStatus)
     status: OrganizerStatus;
 
 }

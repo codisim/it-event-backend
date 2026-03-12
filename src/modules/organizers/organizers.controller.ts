@@ -8,6 +8,7 @@ import { OrganizerResponseDto } from './dto/organizer-response.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/common/guards/roles.guard';
 import { UpdateOrganizerStatusDto } from './dto/update-organizer-status.dto';
+import { OrganizerAprovedResponseDto } from './dto/organizer-aproved-response.dto';
 
 
 @ApiTags('Organizers')
@@ -44,18 +45,25 @@ export class OrganizersController {
     // Admin approves/rejects organizer
     @Patch('status/:id')
     @Roles(UserRole.ADMIN)
-    @ApiOperation({ summary: 'Update organizer status (admin)', description: 'Admin can approve or reject a pending organizer' })
-    @ApiResponse({ 
-        status: 200, 
-        description: 'Organizer status updated', 
-        type: UpdateOrganizerStatusDto,
+    @ApiOperation({
+        summary: 'Update organizer status (admin)',
+        description: 'Admin can approve or reject a pending organizer'
     })
+    @ApiResponse({
+        status: 200,
+        description: 'Organizer status updated',
+        type: OrganizerAprovedResponseDto,
+    })
+    @ApiBody({ type: UpdateOrganizerStatusDto })
 
-    @ApiBody({ type: CreateOrganizerDto })
     async updateOrganizerStatus(
         @Param('id') organizerId: string,
-        @Body('status') status: OrganizerStatus
+        @Body() body: UpdateOrganizerStatusDto
     ): Promise<OrganizerResponseDto> {
-        return this.organizersService.updateOrganizerStatus(organizerId, status);
+
+        return this.organizersService.updateOrganizerStatus(
+            organizerId,
+            body.status
+        );
     }
 }
