@@ -7,6 +7,7 @@ import { CreateOrganizerDto } from './dto/create-organizer.dto';
 import { OrganizerResponseDto } from './dto/organizer-response.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/common/guards/roles.guard';
+import { UpdateOrganizerStatusDto } from './dto/update-organizer-status.dto';
 
 
 @ApiTags('Organizers')
@@ -47,8 +48,10 @@ export class OrganizersController {
     @ApiResponse({ 
         status: 200, 
         description: 'Organizer status updated', 
-        type: OrganizerResponseDto 
+        type: UpdateOrganizerStatusDto,
     })
+
+    @ApiBody({ type: CreateOrganizerDto })
     async updateOrganizerStatus(
         @Param('id') organizerId: string,
         @Body('status') status: OrganizerStatus
