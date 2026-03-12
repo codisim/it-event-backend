@@ -37,6 +37,8 @@ export class OrganizersService {
             throw new InternalServerErrorException('Failed to create organizer request');
         }
     }
+
+
     // Admin approves/rejects organizer
     async updateOrganizerStatus(organizerId: string, status: OrganizerStatus): Promise<OrganizerResponseDto> {
 
@@ -56,6 +58,17 @@ export class OrganizersService {
         } catch (error) {
             console.error('Error updating organizer status:', error);
             throw new InternalServerErrorException('Failed to update organizer status');
+        }
+    }
+
+    // Get all organizers (for admin)
+    async getAllOrganizers(): Promise<OrganizerResponseDto[]> {
+        try {
+            const organizers = await this.prisma.organizer.findMany();
+            return organizers;
+        } catch (error) {
+            console.error('Error fetching organizers:', error);
+            throw new InternalServerErrorException('Failed to fetch organizers');
         }
     }
 }

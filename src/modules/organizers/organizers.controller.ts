@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Patch, Param, Request, ForbiddenException, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Patch, Param, Request, ForbiddenException, UseGuards, Get } from '@nestjs/common';
 import { OrganizersService } from './organizers.service';
 import { Roles } from 'src/common/decorators/role.decorators';
 import { OrganizerStatus, UserRole } from '@prisma/client';
@@ -65,5 +65,30 @@ export class OrganizersController {
             organizerId,
             body.status
         );
+    }
+
+    // get all organizer (admin)
+    @Get()
+    @Roles(UserRole.ADMIN)
+    @ApiOperation({
+        summary: 'Get all organizers (admin)',
+        description: 'Admin can view all organizer requests and their statuses'
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'List of organizers',
+        type: [OrganizerResponseDto],
+    })
+
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden. Only admins can access this endpoint.',
+    })
+
+
+    async getAllOrganizers(): Promise<OrganizerResponseDto[]> {
+        return this.organizersService.getAllOrganizers();
     }
 }
