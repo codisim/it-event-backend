@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { VenuesService } from './venues.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -49,5 +49,31 @@ export class VenuesController {
         return this.venuesService.createVenue(createVenueDto);
     }
 
+
+    // get all venues
+    @Get()
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Get all venues',
+        description: 'Only admins can view all venues'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Venues retrieved successfully',
+        type: [VenueResponseDto]
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+    async getAllVenues(): Promise<VenueResponseDto[]> {
+        return this.venuesService.getAllVenues();
+    }
 
 }
