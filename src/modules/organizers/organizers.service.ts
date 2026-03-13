@@ -83,4 +83,19 @@ export class OrganizersService {
             throw new InternalServerErrorException('Failed to fetch organizer');
         }
     }
+
+    // delete organizer (admin)
+    async deleteOrganizer(organizerId: string): Promise<{ message: string }> {
+        // Check if organizer exists
+        const organizer = await this.prisma.organizer.findUnique({ where: { id: organizerId } });
+        if (!organizer) throw new NotFoundException('Organizer not found');
+
+        try {
+            await this.prisma.organizer.delete({ where: { id: organizerId } });
+            return { message: 'Organizer deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting organizer:', error);
+            throw new InternalServerErrorException('Failed to delete organizer');
+        }
+    }
 }

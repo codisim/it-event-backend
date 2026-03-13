@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Post, Patch, Param, Request, ForbiddenException, UseGuards, Get } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Patch, Param, Request, ForbiddenException, UseGuards, Get, Delete } from '@nestjs/common';
 import { OrganizersService } from './organizers.service';
 import { Roles } from 'src/common/decorators/role.decorators';
 import { OrganizerStatus, UserRole } from '@prisma/client';
@@ -131,4 +131,36 @@ export class OrganizersController {
 
         return this.organizersService.getOrganizerById(organizerId);
     }
+
+    // delete organizer (admin)
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Delete organizer (admin)'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Organizer deleted successfully'
+    })
+
+     @ApiResponse({
+        status: 401,
+        description: 'Unauthorized. The user is not authenticated or the token is invalid.'
+    })
+
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden. Only admins can access this endpoint.',
+    })
+
+
+    async deleteOrganizer(
+        @Param('id') organizerId: string
+    ): Promise<{message: string}> {
+        return this.organizersService.deleteOrganizer(organizerId);
+    }
+
 }
