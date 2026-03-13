@@ -38,4 +38,29 @@ export class SessionsService {
             throw new InternalServerErrorException('Failed to create session');
         }
     }
+
+    // // get all sessions (only admin)
+    async getAllSessions(): Promise<SessionResponseDto[]> {
+        try {
+            const sessions = await this.prisma.session.findMany({
+                select: {
+                    id: true,
+                    title: true,
+                    startTime: true,
+                    endTime: true,
+                    eventId: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            });
+
+            return sessions;
+
+        } catch (error) {
+            console.error('Error fetching sessions:', error);
+            throw new InternalServerErrorException('Failed to fetch sessions');
+        }
+    }
+
+ 
 }

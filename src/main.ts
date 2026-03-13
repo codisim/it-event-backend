@@ -34,7 +34,7 @@ async function bootstrap() {
     .setTitle('Event Management API for It conference')
     .setDescription('API documentation for Event Management application')
     .setVersion('1.0.0')
-    .addTag('auth')
+    // .addTag('auth')
     .addBearerAuth({
       type: 'http',
       scheme: 'bearer',

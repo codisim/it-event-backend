@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -48,5 +48,68 @@ export class SessionsController {
     async createSession(@Body() createSessionDto: CreateSessionDto): Promise<SessionResponseDto> {
         return this.sessionsService.createSession(createSessionDto);
     }
-}
 
+    // get all sessions (only admin)
+    @Get()
+     @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Get all sessions',
+        description: 'Only admins can get all sessions'
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'Sessions retrieved successfully',
+    })
+
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+
+    @ApiResponse({
+        status: 500,
+        description: 'Internal Server Error'
+    })
+
+    async getAllSessions(): Promise<SessionResponseDto[]> {
+        return this.sessionsService.getAllSessions();
+    }
+
+    // get all sessions for an event
+    @Get('event/:eventId')
+    @ApiOperation({
+        summary: 'Get all sessions for an event'
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'Sessions retrieved successfully',
+    })
+
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+
+    @ApiResponse({
+        status: 500,
+        description: 'Internal Server Error'
+    })
+
+    async getSessionsByEventId(@Param('eventId') eventId: string): Promise<SessionResponseDto[]> {
+        return this.sessionsService.getSessionsByEventId(eventId);
+    }
+}
