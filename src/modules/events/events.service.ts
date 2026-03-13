@@ -213,4 +213,42 @@ export class EventsService {
             throw new InternalServerErrorException('Failed to delete event');
         }
     }
+
+    // get events by id
+    async updateVenueById(organizerId: string): Promise<EventResponseDto[]> {
+        try {
+            const events = await this.prisma.event.findMany({
+                where: { organizerId },
+                select: {
+                    id: true,
+                    title: true,
+                    description: true,
+                    startDate: true,
+                    endDate: true,
+                    location: true,
+                    createdAt: true,
+                    organizerId: true,
+                    organizer: {
+                        select: {
+                            id: true,
+                            name: true,
+                            companyName: true,
+                            contactInfo: true,
+                        }
+                    },
+                    venue: {
+                        select: {
+                            id: true,
+                            name: true,
+                            address: true,
+                        }
+                    }
+                }
+            });
+            return events;
+        } catch (error) {
+            console.error('Error fetching events by organizer ID:', error);
+            throw new InternalServerErrorException('Failed to fetch events by organizer ID');
+        }
+    }
 }

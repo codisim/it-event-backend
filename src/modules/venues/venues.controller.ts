@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { VenuesService } from './venues.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -7,6 +7,7 @@ import { Roles } from 'src/common/decorators/role.decorators';
 import { UserRole } from '@prisma/client';
 import { CreateVenueDto } from './dto/create-vanue.dto';
 import { VenueResponseDto } from './dto/vanue-response.dto';
+import { UpdateVenueDto } from './dto/update-vanue.dto';
 
 
 @ApiTags('Venues')
@@ -100,6 +101,32 @@ export class VenuesController {
     })
     async getVenueById(id: string): Promise<any> {
         return this.venuesService.getVenueById(id);
+    }
+
+    // update a venue by id
+    @Patch(':id')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Update a venue by ID',
+        description: 'Only admins can update a venue by ID'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Venue updated successfully',
+        type: VenueResponseDto
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+    async updateVenueById(id: string, @Body() updateVenueDto: UpdateVenueDto): Promise<VenueResponseDto> {
+        return this.venuesService.updateVenueById(id, updateVenueDto);
     }
 
 }
