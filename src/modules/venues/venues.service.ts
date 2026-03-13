@@ -107,4 +107,27 @@ export class VenuesService {
         } 
     }
 
+    // delete a venue by id
+    async deleteVenue(id: string) {
+        try {
+
+            const existingVenue = await this.prisma.venue.findUnique({
+                where: { id }
+            });
+
+            if (!existingVenue) {
+                throw new NotFoundException('Venue not found');
+            }   
+
+            await this.prisma.venue.delete({
+                where: { id }
+            });
+            
+            return { message: 'Venue deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting venue:', error);
+            throw new InternalServerErrorException('Failed to delete venue');
+        }
+    }
+
 }

@@ -129,4 +129,29 @@ export class VenuesController {
         return this.venuesService.updateVenue(id, updateVenueDto);
     }
 
+    // delete a venue by id
+    @Post(':id/delete')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Delete a venue by ID',
+        description: 'Only admins can delete a venue by ID'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Venue deleted successfully'
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+    async deleteVenueById(id: string): Promise<{message: string}> {
+        return this.venuesService.deleteVenue(id);
+    }
+
 }
