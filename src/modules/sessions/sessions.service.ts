@@ -62,5 +62,27 @@ export class SessionsService {
         }
     }
 
- 
+    // get all sessions for an event
+    async getSessionsByEventId(eventId: string): Promise<SessionResponseDto[]> {
+        try {
+            const sessions = await this.prisma.session.findMany({
+                where: { eventId },
+                select: {
+                    id: true,
+                    title: true,
+                    startTime: true,
+                    endTime: true,
+                    eventId: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            });
+
+            return sessions;
+
+        } catch (error) {
+            console.error('Error fetching sessions for event:', error);
+            throw new InternalServerErrorException('Failed to fetch sessions for event');
+        }
+    }
 }
