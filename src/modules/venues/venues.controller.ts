@@ -76,4 +76,30 @@ export class VenuesController {
         return this.venuesService.getAllVenues();
     }
 
+    // get a venue by id
+    @Get(':id')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Get a venue by ID',
+        description: 'Only admins can view a venue by ID'
+    })
+    @ApiResponse({
+        status: 200,
+        description: 'Venue retrieved successfully',
+        type: VenueResponseDto
+    })
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden'
+    })
+    async getVenueById(id: string): Promise<any> {
+        return this.venuesService.getVenueById(id);
+    }
+
 }

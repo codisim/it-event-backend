@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -49,6 +49,33 @@ export class VenuesService {
         } catch (error) {
             console.error('Error fetching venues:', error);
             throw new InternalServerErrorException('Failed to fetch venues');
+        }
+    }
+
+    // get a venue by id
+    async getVenueById(id: string) {
+        try {
+            const venue = await this.prisma.venue.findUnique({
+                where: { id },
+                select: {
+                    id: true,
+                    name: true,
+                    address: true,
+                    mapLink: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            });
+
+            if (!venue) {
+                throw new NotFoundException('Venue not found');
+            }
+
+            return venue;
+            
+        } catch (error) {
+            console.error('Error fetching venue by id:', error);
+            throw new InternalServerErrorException('Failed to fetch venue');
         }
     }
 

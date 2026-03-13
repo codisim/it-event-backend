@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class VenueResponseDto {
 
@@ -25,6 +25,7 @@ export class VenueResponseDto {
     example: "https://maps.google.com/example",
     required: false
   })
+  @ApiPropertyOptional()
   mapLink?: string | null;
 
   @ApiProperty({
