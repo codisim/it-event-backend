@@ -214,6 +214,8 @@ export class EventsService {
         }
     }
 
+    
+
     // get events by id
     async updateVenueById(organizerId: string): Promise<EventResponseDto[]> {
         try {

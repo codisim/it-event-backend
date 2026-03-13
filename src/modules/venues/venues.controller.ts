@@ -126,7 +126,7 @@ export class VenuesController {
         description: 'Forbidden'
     })
     async updateVenueById(id: string, @Body() updateVenueDto: UpdateVenueDto): Promise<VenueResponseDto> {
-        return this.venuesService.updateVenueById(id, updateVenueDto);
+        return this.venuesService.updateVenue(id, updateVenueDto);
     }
 
 }

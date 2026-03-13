@@ -79,4 +79,32 @@ export class VenuesService {
         }
     }
 
+    // update a venue by id
+    async updateVenue(id: string, updateVenueDto: any) {
+        const { name, address, mapLink } = updateVenueDto;
+
+        try {
+            const venue = await this.prisma.venue.update({
+                where: { id },
+                data: {
+                    name,
+                    address,
+                    mapLink
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    address: true,
+                    mapLink: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            });
+            return venue;
+        } catch (error) {
+            console.error('Error updating venue:', error);
+            throw new InternalServerErrorException('Failed to update venue');
+        } 
+    }
+
 }
