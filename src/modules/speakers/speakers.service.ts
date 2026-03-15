@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateSpeakerDto } from './dto/create-speaker.dto';
 import { SpeakerResponseDto } from './dto/response-speaker.dto';
+import { UpdateSpeakerDto } from './dto/update-speaker.sto';
 
 @Injectable()
 export class SpeakersService {
@@ -58,6 +59,42 @@ export class SpeakersService {
         } catch (error) {
             console.error('Error fetching speaker:', error);
             throw new InternalServerErrorException('Failed to fetch speaker');
+        }
+    }
+
+    // update a speaker
+    async updateSpeaker(id: string, updateSpeakerDto: UpdateSpeakerDto): Promise<SpeakerResponseDto> {
+        const { name, bio } = updateSpeakerDto;
+
+        const existSpeaker = await this.prisma.speaker.findUnique({
+            where: { id }
+        });
+
+        if (!existSpeaker)
+            throw new NotFoundException('Speaker not found');
+
+        try {
+            const speaker = await this.prisma.speaker.update({
+                where: { id },
+                data: {
+                    name,
+                    bio,
+                    photo: updateSpeakerDto.photo || null,
+                    updatedAt: new Date(),
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    bio: true,
+                    photo: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            });
+            return speaker;
+        } catch (error) {
+            console.error('Error updating speaker:', error);
+            throw new InternalServerErrorException('Failed to update speaker');
         }
     }
 }
