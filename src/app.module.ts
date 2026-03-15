@@ -10,6 +10,7 @@ import { OrganizersModule } from './modules/organizers/organizers.module';
 import { VenuesModule } from './modules/venues/venues.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { SpeakersModule } from './modules/speakers/speakers.module';
+import { SessionSpeakerModule } from './modules/session-speaker/session-speaker.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { SpeakersModule } from './modules/speakers/speakers.module';
     OrganizersModule,
     VenuesModule,
     SessionsModule,
-    SpeakersModule
+    SpeakersModule,
+    SessionSpeakerModule
   ],
   controllers: [AppController],
   providers: [AppService],

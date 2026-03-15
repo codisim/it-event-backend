@@ -113,7 +113,7 @@ model Speaker {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sessions SessionSpeaker[]
+  sessions SessionSpeaker[] 
 
   @@map("speakers")
 }
