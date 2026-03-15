@@ -52,4 +52,27 @@ export class SessionSpeakerService {
         }
     }
 
+    // get single session-speaker
+    async getSingleSessionSpeaker(id: string): Promise<any> {
+        try {
+            const sessionSpeaker = await this.prisma.sessionSpeaker.findUnique({
+                where: {
+                    id
+                },
+                select: {
+                    id: true,
+                    sessionId: true,
+                    speakerId: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            })
+
+            return sessionSpeaker;
+        } catch (error) {
+            console.error('Error to retried single session-speaker');
+            throw new InternalServerErrorException('Failed to retried single session-speaker');
+        }
+    }
+
 }
