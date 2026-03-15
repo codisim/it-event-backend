@@ -27,4 +27,6 @@ export class CreateSpeakerDto {
   @IsOptional()
   @IsUrl({}, { message: "Photo must be a valid URL." })
   photo?: string;
+
+  
 }
