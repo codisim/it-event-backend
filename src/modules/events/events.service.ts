@@ -214,7 +214,7 @@ export class EventsService {
         }
     }
 
-    
+
 
     // get events by id
     async updateVenueById(organizerId: string): Promise<EventResponseDto[]> {
@@ -253,4 +253,17 @@ export class EventsService {
             throw new InternalServerErrorException('Failed to fetch events by organizer ID');
         }
     }
+
+
+    // gt events by organizer id
+    async getEventsByOrganizerId(organizerId: string): Promise<any[]> {
+        try {
+            const events = await this.prisma.event.findMany({ where: { organizerId } });
+            return events;
+        } catch (error) {
+            console.error('Error fetching events for organizer:', error);
+            throw new InternalServerErrorException('Failed to fetch events for organizer');
+        }
+    }
+
 }

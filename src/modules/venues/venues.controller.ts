@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { VenuesService } from './venues.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -8,6 +8,7 @@ import { UserRole } from '@prisma/client';
 import { CreateVenueDto } from './dto/create-vanue.dto';
 import { VenueResponseDto } from './dto/vanue-response.dto';
 import { UpdateVenueDto } from './dto/update-vanue.dto';
+import { EventResponseDto } from '../events/dto/event-response.dto';
 
 
 @ApiTags('Venues')
@@ -99,7 +100,7 @@ export class VenuesController {
         status: 403,
         description: 'Forbidden'
     })
-    async getVenueById(id: string): Promise<any> {
+    async getVenueById(@Param('id') id: string): Promise<any> {
         return this.venuesService.getVenueById(id);
     }
 
@@ -125,7 +126,7 @@ export class VenuesController {
         status: 403,
         description: 'Forbidden'
     })
-    async updateVenueById(id: string, @Body() updateVenueDto: UpdateVenueDto): Promise<VenueResponseDto> {
+    async updateVenueById(@Param('id') id: string, @Body() updateVenueDto: UpdateVenueDto): Promise<VenueResponseDto> {
         return this.venuesService.updateVenue(id, updateVenueDto);
     }
 
@@ -150,7 +151,7 @@ export class VenuesController {
         status: 403,
         description: 'Forbidden'
     })
-    async deleteVenueById(id: string): Promise<{message: string}> {
+    async deleteVenueById(@Param('id') id: string): Promise<{message: string}> {
         return this.venuesService.deleteVenue(id);
     }
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -149,7 +149,7 @@ export class SessionsController {
     }
 
     // delete session (only admin)
-    @Post('delete/:id')
+    @Delete('delete/:id')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles(UserRole.ADMIN)
     @ApiBearerAuth('JWT-auth')
@@ -184,7 +184,7 @@ export class SessionsController {
 
 
     // delete all sessions for an event (only admin)
-    @Post('delete/event/:eventId')
+    @Delete('delete/event/:eventId')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles(UserRole.ADMIN)
     @ApiBearerAuth('JWT-auth')

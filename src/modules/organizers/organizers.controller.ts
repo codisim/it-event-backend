@@ -114,6 +114,11 @@ export class OrganizersController {
     })
 
     @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+
+    @ApiResponse({
         status: 403,
         description: 'Forbidden. Only admins or the organizer themselves can access this endpoint.',
     })
@@ -133,40 +138,6 @@ export class OrganizersController {
         return this.organizersService.getOrganizerById(organizerId);
     }
 
-    // gt events by organizer id
-    @Get(':id/events')
-    @UseGuards(JwtAuthGuard, RoleGuard)
-    @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
-    @ApiOperation({
-        summary: 'Get events by organizer ID',
-        description: 'Admin can view events for any organizer. Organizers can view their own events.'
-    })
-
-    @ApiResponse({
-        status: 200,
-        description: 'List of events for the organizer',
-        type: [OrganizerResponseDto],
-    })
-
-    @ApiResponse({
-        status: 403,
-        description: 'Forbidden. Only admins or the organizer themselves can access this endpoint.',
-    })
-
-    async getEventsByOrganizerId(
-        @Param('id') organizerId: string,
-        @Request() req: any
-    ): Promise<any[]> {
-        const userId = req.user.id;
-        const userRole = req.user.role;
-
-        // Admins can view any organizer's events, organizers can only view their own events
-        if (userRole === UserRole.ORGANIZER && userId !== organizerId) {
-            throw new ForbiddenException('You can only view your own events');
-        }
-
-        return this.organizersService.getEventsByOrganizerId(organizerId);
-    }
 
     // delete organizer (admin)
     @Delete(':id')

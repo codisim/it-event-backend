@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, Param, Patch, Post, Request, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateEventDto } from './dto/crete-event.dto';
@@ -8,6 +8,7 @@ import { UserRole } from '@prisma/client';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { RoleGuard } from 'src/common/guards/roles.guard';
 import { UpdatedEventDto } from './dto/update-event-dto';
+import { OrganizerResponseDto } from '../organizers/dto/organizer-response.dto';
 
 @Controller('events')
 export class EventsController {
@@ -16,7 +17,7 @@ export class EventsController {
     @Post('create')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles(UserRole.ADMIN)
-     @ApiBearerAuth('JWT-auth')
+    @ApiBearerAuth('JWT-auth')
     @HttpCode(201)
     @ApiOperation({ summary: 'Create a new event (admin only)', description: 'Create a new event with name, description, date and location' })
     @ApiResponse({
@@ -100,11 +101,48 @@ export class EventsController {
         return this.eventsService.getEventById(id);
     }
 
+
+    // gt events by organizer id
+    @Get(':id/events')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({
+        summary: 'Get events by organizer ID',
+        description: 'Admin can view events for any organizer. Organizers can view their own events.'
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'List of events for the organizer',
+        type: [OrganizerResponseDto],
+    })
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden. Only admins or the organizer themselves can access this endpoint.',
+    })
+
+    async getEventsByOrganizerId(
+        @Param('id') organizerId: string,
+        @Request() req: any
+    ): Promise<any[]> {
+        const userId = req.user.id;
+        const userRole = req.user.role;
+
+        // Admins can view any organizer's events, organizers can only view their own events
+        if (userRole === UserRole.ORGANIZER && userId !== organizerId) {
+            throw new ForbiddenException('You can only view your own events');
+        }
+
+        return this.eventsService.getEventsByOrganizerId(organizerId);
+    }
+
     // update event by ID (admin only)
     @Patch(':id')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles(UserRole.ADMIN)
-     @ApiBearerAuth('JWT-auth')
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({
         summary: 'Update event by ID (admin only)',
         description: 'Update details of an event by ID (admin only)'
@@ -149,7 +187,7 @@ export class EventsController {
     @Delete(':id')
     @UseGuards(JwtAuthGuard, RoleGuard)
     @Roles(UserRole.ADMIN)
-     @ApiBearerAuth('JWT-auth')
+    @ApiBearerAuth('JWT-auth')
     @ApiOperation({
         summary: 'Delete event by ID (admin only)',
         description: 'Delete an event by ID (admin only)'
@@ -185,7 +223,7 @@ export class EventsController {
         description: 'Internal server error',
     })
 
-    async deleteEventById(@Param('id') id: string): Promise<{message: string}> {
+    async deleteEventById(@Param('id') id: string): Promise<{ message: string }> {
         await this.eventsService.deleteEventById(id);
         return { message: 'Event deleted successfully' };
     }

@@ -6,7 +6,7 @@ export class LoginDto {
 
     @ApiProperty({
         description: 'Email address of the user',
-        example: 'john.doe@example.com',
+        example: 'habiba@gmail.com',
     })
     @IsEmail({}, { message: 'Please provide a valid email address.' })
     @IsNotEmpty({ message: 'Email cannot be empty.' })
@@ -14,7 +14,7 @@ export class LoginDto {
 
     @ApiProperty({
         description: 'Password of the user',
-        example: 'password123',
+        example: '123456',
     })
     @IsString()
     @IsNotEmpty({ message: 'Password cannot be empty.' })
