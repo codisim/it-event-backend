@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { SpeakersService } from './speakers.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateSpeakerDto } from './dto/create-speaker.dto';
@@ -37,7 +37,7 @@ export class SpeakersController {
     @ApiResponse({ status: 200, description: 'Speaker retrieved successfully' })
     @ApiResponse({ status: 404, description: 'Speaker not found' })
     @ApiResponse({ status: 500, description: 'Internal Server Error' })
-    async getSpeakerById(@Body('id') id: string): Promise<SpeakerResponseDto> {
+    async getSpeakerById(@Param('id') id: string): Promise<SpeakerResponseDto> {
         return this.speakersService.getSpeakerById(id);
     }
 
@@ -49,7 +49,7 @@ export class SpeakersController {
     @ApiResponse({ status: 400, description: 'Bad Request' })
     @ApiResponse({ status: 404, description: 'Speaker not found' })
     @ApiResponse({ status: 500, description: 'Internal Server Error' })
-    async updateSpeaker(@Body('id') id: string, @Body() updateSpeakerDto: UpdateSpeakerDto): Promise<SpeakerResponseDto> {
+    async updateSpeaker(@Param('id') id: string, @Body() updateSpeakerDto: UpdateSpeakerDto): Promise<SpeakerResponseDto> {
         return this.speakersService.updateSpeaker(id, updateSpeakerDto);
     }
 
@@ -59,7 +59,7 @@ export class SpeakersController {
     @ApiResponse({ status: 200, description: 'Speaker deleted successfully' })
     @ApiResponse({ status: 404, description: 'Speaker not found' })
     @ApiResponse({ status: 500, description: 'Internal Server Error' })
-    async deleteSpeaker(@Body('id') id: string): Promise<{message: string}> {
+    async deleteSpeaker(@Param('id') id: string): Promise<{message: string}> {
         await this.speakersService.deleteSpeaker(id);
         return { message: 'Speaker deleted successfully' };
     }
