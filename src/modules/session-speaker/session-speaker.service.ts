@@ -33,7 +33,7 @@ export class SessionSpeakerService {
     }
 
     // get all session speaker (admin)
-    async getAllSessionSpeakers():Promise<SessionSpeakerResponseDto[]>{
+    async getAllSessionSpeakers(): Promise<SessionSpeakerResponseDto[]> {
         try {
             const sessionSpeaker = await this.prisma.sessionSpeaker.findMany({
                 select: {
@@ -46,7 +46,7 @@ export class SessionSpeakerService {
             })
 
             return sessionSpeaker;
-            
+
         } catch (error) {
             console.error('Error to retried all session-speaker');
             throw new InternalServerErrorException('Failed to retried all session-speaker');
@@ -79,39 +79,69 @@ export class SessionSpeakerService {
 
     // update a session speaker
     async updateSessionSpeaker(id: string, updateSessionSpeakerDto: UpdateSessionSpeakerDto): Promise<SessionSpeakerResponseDto> {
-        
+
         const existSessionSpeaker = await this.prisma.sessionSpeaker.findUnique({
             where: {
                 id
             }
         })
 
-        if(!existSessionSpeaker)
+        if (!existSessionSpeaker)
             throw new NotFoundException('Session speaker not found');
-        
+
         try {
-                const sessionSpeaker = await this.prisma.sessionSpeaker.update({
-                    where: {
-                        id
-                    },
-                    data: {
-                        sessionId: updateSessionSpeakerDto.sessionId,
-                        speakerId: updateSessionSpeakerDto.speakerId
-                    },
-                    select: {
-                        id: true,
-                        sessionId: true,
-                        speakerId: true,
-                        createdAt: true,
-                        updatedAt: true
-                    }
-                })
-    
-                return sessionSpeaker;  
-            } catch (error) {
-                console.error('Error to update session-speaker');
-                throw new InternalServerErrorException('Failed to update session-speaker');
-            }
-        }   
+            const sessionSpeaker = await this.prisma.sessionSpeaker.update({
+                where: {
+                    id
+                },
+                data: {
+                    sessionId: updateSessionSpeakerDto.sessionId,
+                    speakerId: updateSessionSpeakerDto.speakerId
+                },
+                select: {
+                    id: true,
+                    sessionId: true,
+                    speakerId: true,
+                    createdAt: true,
+                    updatedAt: true
+                }
+            })
+
+            return sessionSpeaker;
+        } catch (error) {
+            console.error('Error to update session-speaker');
+            throw new InternalServerErrorException('Failed to update session-speaker');
+        }
+    }
+
+
+    // delete 
+    async deleteSessionSpeaker(id: string): Promise<{ message: string }> {
+        try {
+
+
+            const existSessionSpeaker = await this.prisma.sessionSpeaker.findUnique({
+                where: {
+                    id
+                }
+            })
+
+            if (!existSessionSpeaker)
+                throw new NotFoundException('Session speaker not found')
+
+            await this.prisma.sessionSpeaker.delete({
+                where: {
+                    id
+                }
+            });
+
+
+            return { message: 'Session Speaker deleted successfully' };
+        } catch (error) {
+            console.error('Error deleting Session speaker:', error);
+            throw new InternalServerErrorException('Failed to delete Session speaker');
+
+        }
+    }
 
 }

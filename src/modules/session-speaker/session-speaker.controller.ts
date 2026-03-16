@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { SessionSpeakerService } from './session-speaker.service';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
@@ -56,7 +56,7 @@ export class SessionSpeakerController {
     // @ApiBearerAuth('JWT-auth')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
-        summary: 'Get all session speakers (admin only)',
+        summary: 'Get all session speakers',
     })
 
     @ApiResponse({
@@ -91,7 +91,7 @@ export class SessionSpeakerController {
     // @ApiBearerAuth('JWT-auth')
     @HttpCode(HttpStatus.OK)
     @ApiOperation({
-        summary: 'Get single session speaker (admin only)',
+        summary: 'Get single session speaker',
     })
 
     @ApiResponse({
@@ -154,6 +154,41 @@ export class SessionSpeakerController {
     async updateSessionSpeaker(@Param('id') id: string, @Body() updateSessionSpeakerDto: UpdateSessionSpeakerDto
     ): Promise<SessionSpeakerResponseDto> {
         return this.sessionSpeakerService.updateSessionSpeaker(id, updateSessionSpeakerDto);
+    }
+
+
+    // delete session speaker
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @HttpCode(HttpStatus.OK)
+    @ApiOperation({
+        summary: 'Delete a session speaker (admin only)',
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'Session speaker deleted successfully',
+    })  
+
+     @ApiResponse({
+        status: 401,
+        description: 'Unauthorized. Invalid or expired access token',
+    })
+
+    @ApiResponse({
+        status: 403,
+        description: 'Forbidden. User does not have permission to perform this action',
+    })
+
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error',
+    })
+
+    async deleteSessionSpeaker(@Param('id') id: string): Promise<any> {
+        await this.sessionSpeakerService.deleteSessionSpeaker(id);
     }
 
 

@@ -151,6 +151,7 @@ export class VenuesController {
         status: 403,
         description: 'Forbidden'
     })
+    
     async deleteVenueById(@Param('id') id: string): Promise<{message: string}> {
         return this.venuesService.deleteVenue(id);
     }

@@ -111,7 +111,7 @@ export class VenuesService {
     }
 
     // delete a venue by id
-    async deleteVenue(id: string) {
+    async deleteVenue(id: string): Promise<{ message: string }> {
         try {
 
             const existingVenue = await this.prisma.venue.findUnique({
