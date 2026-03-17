@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -52,13 +52,34 @@ export class TicketController {
         description: 'Unauthorized'
     })
 
-     @ApiResponse({
+    @ApiResponse({
         status: 500,
         description: 'Internal server error.'
     })
 
     async getAllTickets(@Req() req): Promise<TicketResponseDto[]> {
         return this.ticketService.getAllTickets(req.user.id);
+    }
+
+    // get single
+    @Get(':id')
+    @ApiOperation({ summary: 'Get single ticket by ID' })
+    @ApiResponse({ status: 200, type: TicketResponseDto })
+     @ApiResponse({
+        status: 401,
+        description: 'Unauthorized'
+    })
+
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error.'
+    })
+    
+    async getTicketById(
+        @Param('id') id: string,
+        @Req() req
+    ): Promise<TicketResponseDto> {
+        return this.ticketService.getTicketById(id, req.user.id);
     }
 
 }
