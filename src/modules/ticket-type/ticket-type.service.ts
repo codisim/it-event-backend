@@ -16,7 +16,7 @@ export class TicketTypeService {
             where: { id: dto.eventId }
         });
 
-        if (!event) 
+        if (!event)
             throw new NotFoundException("Event not found");
 
         const ticketType = await this.prisma.ticketType.create({
@@ -32,5 +32,17 @@ export class TicketTypeService {
             ...ticketType,
             price: Number(ticketType.price)
         };
+    }
+
+    // get all
+    async getAll(): Promise<TicketTypeResponseDto[]> {
+        const data = await this.prisma.ticketType.findMany({
+            orderBy: { createdAt: 'desc' }
+        });
+
+        return data.map(t => ({
+            ...t,
+            price: Number(t.price)
+        }));
     }
 }
