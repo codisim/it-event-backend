@@ -1,8 +1,12 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { OrdersService } from './orders.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OrderResponseDto } from './dto/response-order.dto';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RoleGuard } from 'src/common/guards/roles.guard';
+import { UserRole } from '@prisma/client';
+import { Roles } from 'src/common/decorators/role.decorators';
 
 
 @ApiTags('Orders')
@@ -66,11 +70,11 @@ export class OrdersController {
         type: OrderResponseDto,
     })
 
-     @ApiResponse({
+    @ApiResponse({
         status: 400,
         description: 'Bad request',
     })
-    
+
     @ApiResponse({
         status: 404,
         description: 'Order not found',
@@ -85,4 +89,44 @@ export class OrdersController {
         return this.ordersService.findOne(id);
     }
 
+
+    // update status only admin
+    @Patch(':id/status')
+    @UseGuards(JwtAuthGuard, RoleGuard)
+    @Roles(UserRole.ADMIN)
+    @ApiBearerAuth('JWT-auth')
+    @ApiOperation({ summary: 'Update order status' })
+
+    @ApiResponse({
+        status: 200,
+        description: 'Order status updated successfully',
+    })
+
+    @ApiResponse({
+        status: 400,
+        description: 'Bad request',
+    })
+
+    @ApiResponse({
+        status: 404,
+        description: 'Order not found',
+    })
+
+    @ApiResponse({
+        status: 401,
+        description: 'Unauthorized',
+    })
+
+    @ApiResponse({
+        status: 500,
+        description: 'Internal server error',
+    })
+
+
+    updateStatus(
+        @Param('id') id: string,
+        @Body('status') status: string,
+    ) {
+        return this.ordersService.updateStatus(id, status);
+    }
 }
