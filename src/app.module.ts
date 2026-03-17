@@ -13,6 +13,7 @@ import { SpeakersModule } from './modules/speakers/speakers.module';
 import { SessionSpeakerModule } from './modules/session-speaker/session-speaker.module';
 import { TicketModule } from './modules/ticket/ticket.module';
 import { TicketTypeModule } from './modules/ticket-type/ticket-type.module';
+import { OrdersModule } from './modules/orders/orders.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { TicketTypeModule } from './modules/ticket-type/ticket-type.module';
     SessionSpeakerModule,
     TicketModule,
     TicketTypeModule,
+    OrdersModule,
   ],
   controllers: [AppController],
   providers: [AppService],
