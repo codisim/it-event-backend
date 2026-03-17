@@ -11,6 +11,8 @@ import { VenuesModule } from './modules/venues/venues.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { SpeakersModule } from './modules/speakers/speakers.module';
 import { SessionSpeakerModule } from './modules/session-speaker/session-speaker.module';
+import { TicketModule } from './modules/ticket/ticket.module';
+import { TicketTypeModule } from './modules/ticket-type/ticket-type.module';
 
 @Module({
   imports: [
@@ -28,7 +30,9 @@ import { SessionSpeakerModule } from './modules/session-speaker/session-speaker.
     VenuesModule,
     SessionsModule,
     SpeakersModule,
-    SessionSpeakerModule
+    SessionSpeakerModule,
+    TicketModule,
+    TicketTypeModule
   ],
   controllers: [AppController],
   providers: [AppService],

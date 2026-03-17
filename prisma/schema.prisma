@@ -62,7 +62,7 @@ model Organizer {
   name        String
   companyName String
   contactInfo String
-  status      OrganizerStatus @default(PENDING) // <-- changed from verified Boolean
+  status      OrganizerStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -131,7 +131,7 @@ model SessionSpeaker {
   @@map("session_speakers")
 }
 
-model TicketType {
+model TicketType {  
   id           String   @id @default(uuid())
   name         String
   price        Decimal  @db.Decimal(10, 2)
@@ -216,6 +216,7 @@ model Sponsor {
 
   @@map("sponsors")
 }
+
 
 model Review {
   id      String  @id @default(uuid())
