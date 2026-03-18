@@ -78,12 +78,9 @@ async function bootstrap() {
     `,
   });
 
-  const port = process.env.PORT || 10000;
-  await app.listen(port, '0.0.0.0');
-
-  Logger.log(`Application is running on: ${await app.getUrl()}`);
+  await app.listen(process.env.PORT ?? 1000);
 }
-// bootstrap().catch((err) => {
-//   Logger.error('Error starting server', err);
-//   process.exit(1);
-// });
+bootstrap().catch((err) => {
+  Logger.error('Error starting server', err);
+  process.exit(1);
+});
