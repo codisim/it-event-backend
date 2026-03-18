@@ -20,12 +20,12 @@ export class CreatePaymentDto {
   @IsString()
   transactionId?: string;
 
-  @ApiProperty({
-    description: 'User ID',
-    example: 'uuid-user-id',
-  })
-  @IsString()
-  userId: string;
+  // @ApiProperty({
+  //   description: 'User ID',
+  //   example: 'uuid-user-id',
+  // })
+  // @IsString()
+  // userId: string;
 
   @ApiProperty({
     description: 'Order ID (must be unique)',
