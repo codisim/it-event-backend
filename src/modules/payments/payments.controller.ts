@@ -108,4 +108,32 @@ export class PaymentsController {
     }
 
 
+    // get payment by order ID
+    @Get('order/:orderId')
+    @ApiParam({
+        name: 'orderId',
+        description: 'order id',
+        required: true,
+        example: 'order-example'
+    })
+    
+    @ApiOperation({
+        summary: 'get payment by order ID',
+        description: 'get payment by order ID'
+    })
+
+    @ApiOkResponse({
+        description: 'payment found successfully',
+        type: PaymentResponseApiDto
+    })
+
+    @ApiNotFoundResponse({
+        description: 'payment not found'
+    })
+
+    async getPaymentByOrderId(@Param('orderId') orderId: string, @GetUser('id') userId: string) {
+        return await this.paymentsService.getPaymentByOrderId(orderId, userId)
+    }
+
+
 }

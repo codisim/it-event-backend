@@ -194,6 +194,29 @@ export class PaymentsService {
     }
 
 
+    // get payment by order ID
+    async getPaymentByOrderId(orderId: string, userId: string): Promise<{
+        success: boolean;
+        data: PaymentResponseDto | null;
+        message: string;
+    }> {
+
+        const payment = await this.prisma.payment.findFirst({
+            where: {
+                orderId,
+                userId
+            }
+        });
+
+        return {
+            success: true,
+            data: payment ? this.mapToPaymentResponse(payment) : null,
+            message: 'Payment found successfully'
+        }
+
+    }
+
+
     private mapToPaymentResponse(payment: any): PaymentResponseDto {
         return {
             id: payment.id,
