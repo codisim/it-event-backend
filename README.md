@@ -36,7 +36,7 @@ We welcome contributions from the community! To get started, please follow these
 2. **Clone the Fork**: Clone your forked repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/event-management.git
+   git clone https://github.com/codisim/tech-conference.git
    ```
 
 3. **Set Up the Environment**: Install the project dependencies using pnpm.

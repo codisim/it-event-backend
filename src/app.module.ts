@@ -14,6 +14,7 @@ import { SessionSpeakerModule } from './modules/session-speaker/session-speaker.
 import { TicketModule } from './modules/ticket/ticket.module';
 import { TicketTypeModule } from './modules/ticket-type/ticket-type.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { OrdersModule } from './modules/orders/orders.module';
     TicketModule,
     TicketTypeModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
