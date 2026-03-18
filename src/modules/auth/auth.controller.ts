@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { RefreshTokenGuard } from './guards/refresh-token-guard';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import {
@@ -19,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 
 @ApiTags('Authentication')
 @Controller('auth')

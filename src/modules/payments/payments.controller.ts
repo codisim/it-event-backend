@@ -4,8 +4,8 @@ import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentResponseApiDto } from './dto/payment-response.dto';
-import { GetUser } from 'src/common/decorators/get-user.decorator';
 import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
+import { GetUser } from 'src/common/decorators/get-user.decorator';
 
 @Controller('payments')
 @UseGuards(JwtAuthGuard)
