@@ -1,10 +1,11 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { PaymentResponseApiDto } from './dto/payment-response.dto';
 import { GetUser } from 'src/common/decorators/get-user.decorator';
+import { ConfirmPaymentDto } from './dto/confirm-payment.dto';
 
 @Controller('payments')
 @UseGuards(JwtAuthGuard)
@@ -35,5 +36,28 @@ export class PaymentsController {
     async createPaymentIntent(@Body() createPaymentDto: CreatePaymentDto, @GetUser('id') userId: string) {
         return await this.paymentsService.createPaymentIntent(createPaymentDto, userId)
     }
+
+
+    // confirmed paymant
+    @Post('confirm')
+    @ApiOperation({
+        summary: 'confirm payment',
+        description: 'confirm payment for an order'
+    })
+
+    @ApiResponse({
+        status: 200,
+        description: 'payment confirmed successfully',
+        type: PaymentResponseApiDto
+    })
+
+    @ApiBadRequestResponse({
+        description: 'Payment not found or already confirmed', 
+    })
+
+
+    async confirmpayment(@Body() confirmPaymentDto: ConfirmPaymentDto, @GetUser('id') userId: string){
+        return await this.paymentsService.confirmPayment(confirmPaymentDto, userId)
+    }   
 
 }

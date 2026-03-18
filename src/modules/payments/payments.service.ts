@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import Stripe from 'stripe';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { PaymentStatus } from '@prisma/client';
+import { OrderStatus, PaymentStatus } from '@prisma/client';
+import { PaymentResponseDto } from './dto/payment-response.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -78,5 +79,79 @@ export class PaymentsService {
 
     }
 
+
+    // confirmed paymant
+    async confirmPayment(confirmPaymentDto: { paymentIntentId: string, orderId: string }, userId: string): Promise<{
+        success: boolean;
+        data: PaymentResponseDto;
+        message: string;
+    }> {
+
+        const { paymentIntentId, orderId } = confirmPaymentDto;
+
+        const payment = await this.prisma.payment.findFirst({
+            where: {
+                userId,
+                orderId,
+                transactionId: paymentIntentId
+            }
+        });
+
+        if (!payment)
+            throw new NotFoundException('Payment not found or already confirmed')
+
+        if (payment.status === PaymentStatus.SUCCESS)
+            throw new BadRequestException('Payment already confirmed')
+
+        const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
+
+        if (paymentIntent.status !== 'succeeded')
+            throw new BadRequestException('Payment not completed')
+
+
+        const [updatedPayment] = await this.prisma.$transaction([
+            this.prisma.payment.update({
+                where: {
+                    id: payment.id
+                },
+                data: {
+                    status: PaymentStatus.SUCCESS
+                },
+            }),
+
+            this.prisma.order.update({
+                where: {
+                    id: orderId
+                },
+                data: {
+                    status: OrderStatus.PROCESSING
+                }
+            }),
+        ]);
+
+        // TODO: as like update checkout in card item
+
+
+        return {
+            success: true,
+            data: this.mapToPaymentResponse(updatedPayment),
+            message: 'Payment confirmed successfully'
+        }
+
+    }
+
+
+    private mapToPaymentResponse(payment: any): PaymentResponseDto {
+        return {
+            id: payment.id,
+            provider: payment.provider,
+            transactionId: payment.transactionId,
+            status: payment.status,
+            userId: payment.userId,
+            orderId: payment.orderId,
+            createdAt: payment.createdAt,
+            updatedAt: payment.updatedAt
+        }
+    }
 
 }
