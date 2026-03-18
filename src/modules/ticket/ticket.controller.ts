@@ -11,21 +11,28 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TicketService } from './ticket.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketResponseDto } from './dto/ticket-response.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateTicketDto } from './dto/update-ticker.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RoleGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorators/role.decorators';
+import { UserRole } from '@prisma/client';
 
 @ApiTags('Ticket')
 @Controller('ticket')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(private readonly ticketService: TicketService) { }
 
   // create new ticker
   @Post()
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
+  @UseGuards(JwtAuthGuard, RoleGuard)
+  @Roles(UserRole.USER, UserRole.ADMIN)
+  @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create new ticket',

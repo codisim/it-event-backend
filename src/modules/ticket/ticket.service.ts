@@ -9,6 +9,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { TicketResponseDto } from './dto/ticket-response.dto';
 import { UpdateTicketDto } from './dto/update-ticker.dto';
 
+
 @Injectable()
 export class TicketService {
   constructor(private readonly prisma: PrismaService) {}

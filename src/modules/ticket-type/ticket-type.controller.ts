@@ -23,16 +23,40 @@ import { UpdateTicketTypeResponseDto } from './dto/update-ticket-type.dto';
 
 @Controller('ticket-type')
 export class TicketTypeController {
-  constructor(private readonly ticketTypeService: TicketTypeService) {}
+  constructor(private readonly ticketTypeService: TicketTypeService) { }
 
   // create
   @Post()
   @UseGuards(JwtAuthGuard, RoleGuard)
-  @ApiBearerAuth('JWT-auth')
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
+  @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Create ticket type' })
-  @ApiResponse({ status: 201, type: TicketTypeResponseDto })
+
+  @ApiResponse({
+    status: 201,
+    description: 'The ticket type has been successfully created.',
+    type: TicketTypeResponseDto
+  })
+
+  @ApiResponse({
+    status: 400,
+    description: 'Bad request'
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized'
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden'
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error'
+  })
+
+
   async createTicketType(
     @Body() dto: CreateTicketTypeDto,
   ): Promise<TicketTypeResponseDto> {
@@ -43,6 +67,15 @@ export class TicketTypeController {
   @Get()
   @ApiOperation({ summary: 'Get all ticket types' })
   @ApiResponse({ status: 200, type: [TicketTypeResponseDto] })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiResponse({ status: 500, description: 'Internal server error' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error'
+  })
+
   async getAll(): Promise<TicketTypeResponseDto[]> {
     return this.ticketTypeService.getAll();
   }
@@ -65,9 +98,9 @@ export class TicketTypeController {
 
   // update
   @Patch(':id')
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth()
+   @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.ADMIN, UserRole.ORGANIZER)
+  @ApiBearerAuth('JWT-auth')
   @ApiOperation({ summary: 'Update ticket type' })
   async update(
     @Param('id') id: string,
@@ -78,12 +111,12 @@ export class TicketTypeController {
 
   // delete
   @Delete(':id')
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('JWT-auth')
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete ticket type' })
-  async delete(@Param('id') id: string): Promise<void> {
+  async delete(@Param('id') id: string): Promise<{message: string}> {
     return this.ticketTypeService.delete(id);
   }
 }

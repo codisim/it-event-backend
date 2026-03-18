@@ -11,7 +11,7 @@ import { UpdateTicketTypeResponseDto } from './dto/update-ticket-type.dto';
 
 @Injectable()
 export class TicketTypeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // create
   async createTicketType(
@@ -112,7 +112,7 @@ export class TicketTypeService {
   }
 
   // delete
-  async delete(id: string): Promise<void> {
+  async delete(id: string): Promise<{message: string}> {
     const existing = await this.prisma.ticketType.findUnique({
       where: { id },
     });
@@ -124,5 +124,7 @@ export class TicketTypeService {
     await this.prisma.ticketType.delete({
       where: { id },
     });
+
+    return { message: 'Ticket type deleted' };
   }
 }
