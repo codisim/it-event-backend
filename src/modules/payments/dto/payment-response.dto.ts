@@ -46,3 +46,22 @@ export class PaymentResponseDto {
   })
   updatedAt: Date;
 }
+
+
+export class PaymentResponseApiDto {
+  @ApiProperty({
+    example: true
+  })
+  success: boolean;
+
+  @ApiProperty({
+    type: PaymentResponseDto
+  })
+  data: PaymentResponseDto
+
+  @ApiProperty({
+    example: 'Payment created successfully',
+    required: false
+  })
+  message?: string
+}
